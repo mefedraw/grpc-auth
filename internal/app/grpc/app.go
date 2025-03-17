@@ -33,7 +33,7 @@ func (a *App) Run() error {
 		return fmt.Errorf("%s: %w", op, err)
 	}
 
-	log.Info("starting gRPC server on port %d", a.port)
+	log.Info("starting gRPC server", "err", a.port)
 
 	err = a.gRPCServer.Serve(lis)
 	if err != nil {
@@ -46,6 +46,6 @@ func (a *App) Run() error {
 func (a *App) Stop() {
 	const op = "grpcapp.Stop"
 	log := a.log.With(slog.String("op", op))
-	log.Info("stopping gRPC server on port %d", a.port)
+	log.Info("stopping gRPC server", "port", a.port)
 	a.gRPCServer.GracefulStop()
 }

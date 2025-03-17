@@ -25,7 +25,7 @@ func New(connectionString string) (*Storage, error) {
 
 	err = db.Ping()
 	if err != nil {
-		slog.Error(op, "failed to ping db", "\t", err, "ConnectionString:", connectionString)
+		slog.Error(op, "failed to ping db", "err", err, "ConnectionString:", connectionString)
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
@@ -88,7 +88,7 @@ func (s *Storage) IsAdmin(ctx context.Context, userID int64) (isAdmin bool, err 
 	err = row.Scan(&isAdmin)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return false, fmt.Errorf("%s: %w", op, err, storage.ErrAppNotFound)
+			return false, fmt.Errorf("%s: %w", op, storage.ErrAppNotFound)
 		}
 		log.Error("failed to query user", "user_id", userID, "error", err)
 		return false, fmt.Errorf("%s: %w", op, err)
@@ -108,7 +108,7 @@ func (s *Storage) App(ctx context.Context, appID int64) (app models.App, err err
 	err = row.Scan(&app.ID, &app.Name, &app.Secret)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return app, fmt.Errorf("%s: %w", op, err, storage.ErrAppNotFound)
+			return app, fmt.Errorf("%s: %w", op, storage.ErrAppNotFound)
 		}
 		log.Error("failed to query app", "app_id", appID, "error", err)
 	}

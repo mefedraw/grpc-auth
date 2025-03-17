@@ -14,7 +14,7 @@ func main() {
 		"file://"+"migrations",
 		"postgres://postgres:postgres@localhost:5432/grpcauthservice?sslmode=disable")
 	if err != nil {
-		slog.Error("migration connect err:", err)
+		slog.Error("migration connect failure", "err", err)
 		panic(err)
 	}
 	if err := m.Up(); err != nil {
@@ -23,7 +23,7 @@ func main() {
 			return
 		}
 
-		slog.Error("failed to up migrations:", err)
+		slog.Error("failed to up migrations", "err", err)
 		panic(err)
 	}
 

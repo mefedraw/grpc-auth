@@ -108,7 +108,7 @@ func (a *Auth) RegisterNewUser(
 	log.Info("registering user")
 	passHash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		log.Error("failed to generate password hash", err.Error())
+		log.Error("failed to generate password hash", "err", err.Error())
 		return 0, fmt.Errorf("%s: %w", op, err)
 	}
 
