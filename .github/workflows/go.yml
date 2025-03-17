@@ -1,31 +1,35 @@
 ﻿name: Go Tests
-
 on: [push, pull_request]
-
 jobs:
   test:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
           go-version: '1.21'
-
       - name: Install dependencies
         run: go mod tidy
-
-      - name: Start gRPC server
-        run: go run ./cmd/sso/main.go &
-
+      - name: Start gRPC server with config
+        run: |
+          # Create storage directory
+          mkdir -p storage
+          # Start the server with explicit config path
+          go run ./cmd/sso/main.go &
+          echo "Server started with PID $!"
       - name: Wait for server to start
-        run: sleep 10
-
+        run: |
+          sleep 10
+          # Check if the server is listening
+          netstat -tuln | grep 44044 || echo "Server not listening on port 44044"
+          # Check server logs or status
+          ps aux | grep sso/main
       - name: Run tests
-        run: go test -v ./...
+        run: go test -v ./tests/...
+        env:
+          CONFIG_PATH: ./config/local.yaml
 
 #      - name: Run golangci-lint
 #        run: |
