@@ -3,32 +3,42 @@
 on:
   push:
     branches:
-      - main  # Запускать workflow при пуше в ветку main
+      - main
   pull_request:
     branches:
-      - main  # Запускать workflow при создании pull request в ветку main
+      - main
 
 jobs:
   build:
-    runs-on: ubuntu-latest  # Используем последнюю версию Ubuntu
-    # Set environment variables at the job level
+    runs-on: ubuntu-latest
     env:
       CONFIG_PATH: ./config/local.yaml
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3  # Клонируем репозиторий
+        uses: actions/checkout@v3
 
       - name: Set up Go
-        uses: actions/setup-go@v4  # Устанавливаем Go
+        uses: actions/setup-go@v4
         with:
-          go-version: '1.21'  # Укажите версию Go, которую используете
+          go-version: '1.21'
+
+      - name: Verify config file exists
+        run: |
+          if [ -f "$CONFIG_PATH" ]; then
+            echo "Config file exists at $CONFIG_PATH"
+          else
+            echo "Config file not found. Copying from repository..."
+            mkdir -p $(dirname $CONFIG_PATH)
+            cp config/local.yaml $CONFIG_PATH
+            echo "Config file copied to $CONFIG_PATH"
+          fi
 
       - name: Build
-        run: go build -v ./...  # Собираем проект
+        run: go build -v ./...
 
       - name: Test
-        run: go test -v ./...  # Запускаем тесты (если они есть)
+        run: go test -v ./...
 
 #      - name: Run golangci-lint
 #        run: |
