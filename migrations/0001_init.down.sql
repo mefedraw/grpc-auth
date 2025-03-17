@@ -1,0 +1,2 @@
+﻿DROP TABLE IF EXISTS users;
+DROP TABLE IF exists apps;

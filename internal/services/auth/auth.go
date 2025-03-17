@@ -118,7 +118,7 @@ func (a *Auth) RegisterNewUser(
 			log.Warn("user already exists", slog.String("error", err.Error()))
 			return 0, fmt.Errorf("%s: %w", op, err)
 		}
-		log.Error("failed to save user")
+		log.Error("failed to save user", slog.String("error", err.Error()))
 		return 0, fmt.Errorf("%s: %w", op, err)
 	}
 

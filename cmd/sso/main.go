@@ -1,6 +1,7 @@
 ﻿package main
 
 import (
+	"fmt"
 	"grpcAuth/internal/app"
 	"grpcAuth/internal/config"
 	"log/slog"
@@ -33,7 +34,17 @@ func main() {
 
 	// TODO: run GRPC-server
 
-	application := app.New(log, cfg.GRPC.Port, cfg.StoragePath, cfg.TokenTTL)
+	// postgres://postgres:postgres@localhost:5432/grpcauthservice?sslmode=disable
+	// postgres://postgres:postgres@localhost:5432/grpcauthservice?sslmode=disable
+	postgresConString := fmt.Sprintf(
+		"postgres://%s:%s@%s:%d/%s?sslmode=disable",
+		cfg.PostgresConfig.Username,
+		cfg.PostgresConfig.Password,
+		cfg.PostgresConfig.Host,
+		cfg.PostgresConfig.Port,
+		cfg.PostgresConfig.Database)
+
+	application := app.New(log, cfg.GRPC.Port, postgresConString, cfg.TokenTTL)
 
 	go func() {
 		err := application.GRPCSrv.Run()

@@ -9,17 +9,17 @@ import (
 )
 
 type App struct {
-	log        *slog.Logger
-	gRPCServer *grpc.Server
-	port       int
+	log         *slog.Logger
+	authService authgrpc.Auth
+	gRPCServer  *grpc.Server
+	port        int
 }
 
-func New(log *slog.Logger, port int) *App {
+func New(log *slog.Logger, authService authgrpc.Auth, port int) *App {
 	gRPCServer := grpc.NewServer()
+	authgrpc.Register(gRPCServer, authService)
 
-	authgrpc.Register(gRPCServer)
-
-	return &App{log, gRPCServer, port}
+	return &App{log, authService, gRPCServer, port}
 }
 
 func (a *App) Run() error {
