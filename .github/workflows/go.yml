@@ -11,6 +11,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest  # Используем последнюю версию Ubuntu
+    # Set environment variables at the job level
+    env:
+      CONFIG_PATH: ./config/local.yaml
 
     steps:
       - name: Checkout code
