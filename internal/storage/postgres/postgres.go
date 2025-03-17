@@ -20,7 +20,7 @@ func New(connectionString string) (*Storage, error) {
 	log := slog.With("op", op)
 	db, err := sql.Open("postgres", connectionString)
 	if err != nil {
-		log.Error("err", err, "ConnectionString:", connectionString)
+		log.Error("failed to connect to db", "err", err, "ConnectionString:", connectionString)
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
