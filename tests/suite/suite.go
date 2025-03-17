@@ -6,7 +6,10 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"grpcAuth/internal/config"
+	"log/slog"
 	"net"
+	"os"
+	"path/filepath"
 	"strconv"
 	"testing"
 )
@@ -23,7 +26,16 @@ func New(t *testing.T) (context.Context, *Suite) {
 	t.Helper()
 	t.Parallel()
 
-	cfg := config.MustLoad()
+	basePath, err := os.Getwd()
+	if err != nil {
+		slog.Error("failed to get current working directory")
+	}
+	if filepath.Base(basePath) == "tests" {
+		basePath = filepath.Dir(basePath)
+	}
+
+	cfgPath := filepath.Join(basePath, "config", "local.yaml")
+	cfg := config.MustLoadByPath(cfgPath)
 
 	ctx, cancelCtx := context.WithCancel(context.Background())
 
@@ -34,7 +46,7 @@ func New(t *testing.T) (context.Context, *Suite) {
 
 	cc, err := grpc.DialContext(
 		context.Background(),
-		grpcAdress(cfg),
+		grpcAddress(cfg),
 		grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		t.Fatal("grpc server connect error:", err)
@@ -47,6 +59,6 @@ func New(t *testing.T) (context.Context, *Suite) {
 	}
 }
 
-func grpcAdress(cfg *config.Config) string {
+func grpcAddress(cfg *config.Config) string {
 	return net.JoinHostPort(grpcHost, strconv.Itoa(cfg.GRPC.Port))
 }
