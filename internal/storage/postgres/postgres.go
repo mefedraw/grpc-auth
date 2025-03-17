@@ -17,15 +17,16 @@ type Storage struct {
 
 func New(connectionString string) (*Storage, error) {
 	const op = "postgresql.New"
+	log := slog.With("op", op)
 	db, err := sql.Open("postgres", connectionString)
 	if err != nil {
-		slog.Error(op, "\t", err, "ConnectionString:", connectionString)
+		log.Error("err", err, "ConnectionString:", connectionString)
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
 	err = db.Ping()
 	if err != nil {
-		slog.Error(op, "failed to ping db", "err", err, "ConnectionString:", connectionString)
+		log.Error("failed to ping db", "err", err, "ConnectionString:", connectionString)
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
